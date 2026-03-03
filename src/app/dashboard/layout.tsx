@@ -56,7 +56,7 @@ export default function DashboardLayout({
             {/* Sidebar */}
             <aside className="hidden md:flex flex-col w-64 bg-white border-r border-slate-200 fixed top-0 left-0 bottom-0 z-40">
                 {/* Logo */}
-                <div className="flex items-center gap-2 px-6 h-16 border-b border-slate-100">
+                <Link href="/" className="flex items-center gap-2 px-6 h-16 border-b border-slate-100 hover:bg-slate-50 transition-colors">
                     <div className="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
@@ -66,7 +66,7 @@ export default function DashboardLayout({
                     <span className="text-lg font-bold font-heading text-slate-900">
                         MailApply
                     </span>
-                </div>
+                </Link>
 
                 {/* Nav Items */}
                 <nav className="flex-1 px-3 py-4 space-y-1">
@@ -125,7 +125,7 @@ export default function DashboardLayout({
             <main className="flex-1 md:ml-64">
                 {/* Mobile Header */}
                 <div className="md:hidden flex items-center justify-between px-4 h-14 bg-white border-b border-slate-200 sticky top-0 z-30">
-                    <Link href="/dashboard" className="flex items-center gap-2">
+                    <Link href="/" className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded-lg bg-primary-600 flex items-center justify-center">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
