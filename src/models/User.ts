@@ -35,9 +35,7 @@ const UserSchema = new Schema<IUser>(
             match: [/^\S+@\S+\.\S+$/, "Please enter a valid email"],
         },
         password: {
-            type: String,
-            required: [true, "Password is required"],
-            minlength: [6, "Password must be at least 6 characters"],
+            type: String, // Optional for OAuth users
         },
         skills: { type: [String], default: [] },
         role: { type: String, default: "", trim: true },
