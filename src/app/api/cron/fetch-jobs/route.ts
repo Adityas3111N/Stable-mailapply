@@ -2,21 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongoose";
 import Job from "@/models/Job";
 
-// 5 broad keywords — 5 calls/day × 30 days = 150 calls/month (under 200 free limit)
+// MERN-optimized keywords — 5 calls/day × 30 days = 150 calls/month
 const SEARCH_KEYWORDS = [
-    "Software Engineer",    // covers frontend, backend, full-stack
-    "Data Scientist",       // covers ML, AI, analytics
-    "Product Manager",      // covers PM, growth, strategy
-    "UI UX Designer",       // covers design roles
-    "DevOps Engineer",      // covers cloud, infra, SRE
+    "MERN Stack Developer",         // exact target role
+    "React Node.js Developer",      // most common MERN job title variant
+    "Full Stack JavaScript Developer", // broader JS full-stack
+    "Software Engineer React",      // SE roles that call out React
+    "Remote Full Stack Developer",  // remote-friendly roles
 ];
 
 const KEYWORD_TO_ROLE: Record<string, string> = {
-    "Software Engineer": "Software Engineer",
-    "Data Scientist": "Data Scientist",
-    "Product Manager": "Product Manager",
-    "UI UX Designer": "UI UX Designer",
-    "DevOps Engineer": "DevOps Engineer",
+    "MERN Stack Developer": "Software Engineer",
+    "React Node.js Developer": "Software Engineer",
+    "Full Stack JavaScript Developer": "Software Engineer",
+    "Software Engineer React": "Software Engineer",
+    "Remote Full Stack Developer": "Software Engineer",
 };
 
 async function fetchJobsForKeyword(keyword: string): Promise<
@@ -51,6 +51,7 @@ async function fetchJobsForKeyword(keyword: string): Promise<
         title: j.job_title ?? "",
         company: j.employer_name ?? "",
         location: j.job_city ? `${j.job_city}, ${j.job_country}` : (j.job_country ?? ""),
+        country: (j.job_country ?? "").toUpperCase(), // e.g. "US", "IN", "GB"
         remote: Boolean(j.job_is_remote),
         description: (j.job_description ?? "").slice(0, 2000),
         applyUrl: j.job_apply_link ?? j.job_google_link ?? "",

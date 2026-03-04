@@ -80,7 +80,7 @@ async function buildAIEmail(
     const recruiterGreeting = greeting(recruiter);
 
     const jobDescSnippet = company.jobDescription
-        ? company.jobDescription.slice(0, 600)
+        ? company.jobDescription.slice(0, 800)
         : "";
 
     const prompt = `You are an expert cold email writer helping job seekers stand out. Write a concise, personalized cold outreach email for a job application.
@@ -102,11 +102,12 @@ RULES (follow strictly):
 1. Email body must be under 180 words.
 2. NEVER start with "I hope this finds you well" or "I am writing to express my interest" — use a punchy, specific opener instead.
 3. The body MUST reference at least one specific thing from the job description or company (if provided). Do not be generic.
-4. Subject line must be specific and compelling — include the applicant's name and one differentiating fact (a skill, a number, an achievement). NEVER use generic subjects like "Job Application" or "Regarding the position".
+4. Subject line must be specific and compelling — include the applicant's name and one differentiating fact (a skill, a specific stack, a project type). NEVER use generic subjects like "Job Application" or "Regarding the position".
 5. Address the recruiter by first name: "${recruiterGreeting}".
 6. End with a clear, confident call to action.
 7. Do NOT add the subject line inside the email body.
-8. Tone: confident, human, professional — NOT robotic or overly formal.
+8. Tone: confident, human, direct — NOT robotic or overly formal.
+9. If the applicant's skills include React, Node.js, MongoDB, or Express, treat this as a full-stack MERN developer — emphasise end-to-end product ownership: "I can take a feature from database schema to polished React UI independently." Tailor this naturally to the role.
 
 Return ONLY valid JSON in this exact format:
 {"subject": "...", "body": "..."}`;

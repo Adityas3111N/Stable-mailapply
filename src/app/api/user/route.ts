@@ -31,7 +31,7 @@ export async function GET() {
                 bio: user.bio,
                 skills: user.skills,
                 resumeUrl: user.resumeUrl,
-                // Expose as boolean — never send the actual token to the client
+                jobPreferences: user.jobPreferences ?? { workMode: "any", preferredCountries: [], jobType: "any" },
                 gmailRefreshToken: Boolean(user.gmailRefreshToken),
             },
         });
@@ -50,7 +50,7 @@ export async function PUT(req: Request) {
         }
 
         const body = await req.json();
-        const { name, role, experience, bio, skills, resumeUrl } = body;
+        const { name, role, experience, bio, skills, resumeUrl, jobPreferences } = body;
 
         await dbConnect();
 
@@ -59,8 +59,9 @@ export async function PUT(req: Request) {
         if (role !== undefined) updateData.role = role.trim();
         if (experience !== undefined) updateData.experience = String(experience).trim();
         if (bio !== undefined) updateData.bio = bio.trim();
-        if (skills !== undefined) updateData.skills = skills;
+        if (skills !== undefined) updateData.skills = skills.slice(0, 10); // max 10 skills
         if (resumeUrl !== undefined) updateData.resumeUrl = resumeUrl;
+        if (jobPreferences !== undefined) updateData.jobPreferences = jobPreferences;
 
         const user = await User.findOneAndUpdate(
             { email: session.user.email },
@@ -82,6 +83,7 @@ export async function PUT(req: Request) {
                 bio: user.bio,
                 skills: user.skills,
                 resumeUrl: user.resumeUrl,
+                jobPreferences: user.jobPreferences,
             },
         });
     } catch (error) {

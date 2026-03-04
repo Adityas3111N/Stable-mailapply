@@ -94,7 +94,7 @@ const skillsByRole: Record<string, string[]> = {
 
 const genericSkills = ["JavaScript", "Python", "SQL", "System Design", "Data Analysis", "Project Management", "Problem Solving", "Communication", "Leadership", "Cloud (AWS/Azure/GCP)", "Excel", "Git", "Agile", "Critical Thinking", "Research", "Presentation Skills", "Technical Writing", "Teamwork", "Adaptability", "Time Management"];
 
-const MAX_SKILLS = 3;
+const MAX_SKILLS = 10;
 const BIO_EXTRA_WORD_LIMIT = 50;
 
 interface ProfileData {
@@ -105,6 +105,11 @@ interface ProfileData {
     bio: string;
     skills: string[];
     resumeUrl: string;
+    jobPreferences?: {
+        workMode: "remote" | "hybrid" | "onsite" | "any";
+        preferredCountries: string[];
+        jobType: "full-time" | "contract" | "any";
+    };
 }
 
 export default function ProfilePage() {
@@ -128,6 +133,11 @@ export default function ProfilePage() {
         bio: "",
         skills: [],
         resumeUrl: "",
+        jobPreferences: {
+            workMode: "any",
+            preferredCountries: [],
+            jobType: "any",
+        },
     });
 
     const STORAGE_KEY = "mailapply_profile_draft";
@@ -284,6 +294,7 @@ export default function ProfilePage() {
                     experience: profile.experience,
                     bio: fullBio,
                     skills: profile.skills,
+                    jobPreferences: profile.jobPreferences,
                 }),
             });
 
@@ -499,7 +510,7 @@ export default function ProfilePage() {
                     <div className="flex items-start gap-2 p-3 rounded-xl bg-orange-50 border border-orange-200">
                         <span className="text-orange-500 mt-0.5 text-base">&#9888;&#65039;</span>
                         <p className="text-xs text-orange-700 font-medium">
-                            Pick your <strong>top 3 strongest skills</strong> &mdash; the ones you can confidently back up in any interview. You&apos;ll only get the job if you&apos;re truly good at it. Don&apos;t waste recruiters&apos; time.
+                            Pick your <strong>top {MAX_SKILLS} strongest skills</strong> &mdash; the ones you can confidently back up in any interview. You&apos;ll only get the job if you&apos;re truly good at it. Don&apos;t waste recruiters&apos; time.
                         </p>
                     </div>
 
@@ -631,6 +642,96 @@ export default function ProfilePage() {
                             </div>
                         </>
                     )}
+                </div>
+
+                {/* Job Preferences Section */}
+                <div className="bg-white rounded-2xl border border-slate-100 p-6 space-y-5">
+                    <h2 className="text-lg font-semibold text-slate-900">Job Preferences</h2>
+
+                    {/* Work Mode */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Work Mode</label>
+                        <div className="flex flex-wrap gap-3">
+                            {(["remote", "hybrid", "onsite", "any"] as const).map((mode) => (
+                                <button
+                                    key={mode}
+                                    type="button"
+                                    onClick={() => setProfile({
+                                        ...profile,
+                                        jobPreferences: { ...profile.jobPreferences!, workMode: mode }
+                                    })}
+                                    className={`px-4 py-2 text-sm font-medium rounded-xl border transition-all ${profile.jobPreferences?.workMode === mode
+                                        ? "bg-primary-50 border-primary-600 text-primary-700 shadow-sm"
+                                        : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                                        }`}
+                                >
+                                    {mode === "onsite" ? "On-site" : mode.charAt(0).toUpperCase() + mode.slice(1)}
+                                    {mode === "remote" && " 🌐"}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Preferred Countries */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">
+                            Locations (Countries)
+                        </label>
+                        <p className="text-xs text-slate-500 mb-3">
+                            Select countries you are open to working in. <strong className="font-semibold text-slate-700">Remote roles are always shown worldwide.</strong> Leave empty to see all jobs.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            {["US", "IN", "GB", "CA", "AU"].map((country) => {
+                                const names: Record<string, string> = { US: "United States", IN: "India", GB: "United Kingdom", CA: "Canada", AU: "Australia" };
+                                const isSelected = profile.jobPreferences?.preferredCountries.includes(country) || false;
+                                return (
+                                    <button
+                                        key={country}
+                                        type="button"
+                                        onClick={() => {
+                                            const current = profile.jobPreferences?.preferredCountries || [];
+                                            const next = isSelected
+                                                ? current.filter(c => c !== country)
+                                                : [...current, country];
+                                            setProfile({
+                                                ...profile,
+                                                jobPreferences: { ...profile.jobPreferences!, preferredCountries: next }
+                                            });
+                                        }}
+                                        className={`px-3 py-1.5 text-sm font-medium rounded-lg border transition-all ${isSelected
+                                            ? "bg-primary-600 border-primary-600 text-white shadow-sm"
+                                            : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                                            }`}
+                                    >
+                                        {isSelected && "✓ "}{names[country]}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Job Type */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Job Type</label>
+                        <div className="flex flex-wrap gap-3">
+                            {(["full-time", "contract", "any"] as const).map((type) => (
+                                <button
+                                    key={type}
+                                    type="button"
+                                    onClick={() => setProfile({
+                                        ...profile,
+                                        jobPreferences: { ...profile.jobPreferences!, jobType: type }
+                                    })}
+                                    className={`px-4 py-2 text-sm font-medium rounded-xl border transition-all ${profile.jobPreferences?.jobType === type
+                                        ? "bg-primary-50 border-primary-600 text-primary-700 shadow-sm"
+                                        : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                                        }`}
+                                >
+                                    {type === "full-time" ? "Full-time" : type === "contract" ? "Contract" : "Any"}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
 
                 {/* Professional Bio Section */}

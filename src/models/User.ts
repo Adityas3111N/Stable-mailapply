@@ -10,6 +10,11 @@ export interface IUser extends Document {
     experience: string;
     resumeUrl: string;
     bio: string;
+    jobPreferences: {
+        workMode: "remote" | "hybrid" | "onsite" | "any";
+        preferredCountries: string[];  // empty = any country
+        jobType: "full-time" | "contract" | "any";
+    };
     // Gmail OAuth tokens (stored when user connects their Gmail)
     gmailAccessToken: string;
     gmailRefreshToken: string;
@@ -47,6 +52,11 @@ const UserSchema = new Schema<IUser>(
         experience: { type: String, default: "", trim: true },
         resumeUrl: { type: String, default: "" },
         bio: { type: String, default: "", maxlength: [2000, "Bio cannot exceed 2000 characters"] },
+        jobPreferences: {
+            workMode: { type: String, enum: ["remote", "hybrid", "onsite", "any"], default: "any" },
+            preferredCountries: { type: [String], default: [] },
+            jobType: { type: String, enum: ["full-time", "contract", "any"], default: "any" },
+        },
         gmailAccessToken: { type: String, default: "" },
         gmailRefreshToken: { type: String, default: "" },
         gmailTokenExpiry: { type: Number, default: 0 },
