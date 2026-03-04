@@ -31,6 +31,8 @@ export async function GET() {
                 bio: user.bio,
                 skills: user.skills,
                 resumeUrl: user.resumeUrl,
+                // Expose as boolean — never send the actual token to the client
+                gmailRefreshToken: Boolean(user.gmailRefreshToken),
             },
         });
     } catch (error) {

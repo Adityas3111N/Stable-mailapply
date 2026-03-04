@@ -39,11 +39,11 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json();
-        const { companyName, recruiterEmail, jobTitle, jobLink, notes } = body;
+        const { companyName, recruiters, jobTitle, jobLink, notes } = body;
 
-        if (!companyName || !recruiterEmail || !jobTitle) {
+        if (!companyName || !recruiters || recruiters.length === 0 || !jobTitle) {
             return NextResponse.json(
-                { error: "Company name, recruiter email, and job title are required" },
+                { error: "Company name, at least one recruiter email, and job title are required" },
                 { status: 400 }
             );
         }
@@ -57,7 +57,10 @@ export async function POST(req: NextRequest) {
         const outreach = await Outreach.create({
             userId: user._id,
             companyName: companyName.trim(),
-            recruiterEmail: recruiterEmail.toLowerCase().trim(),
+            recruiters: recruiters.map((r: { email: string; name: string }) => ({
+                email: r.email.toLowerCase().trim(),
+                name: r.name?.trim() || "",
+            })),
             jobTitle: jobTitle.trim(),
             jobLink: jobLink?.trim() || "",
             notes: notes?.trim() || "",

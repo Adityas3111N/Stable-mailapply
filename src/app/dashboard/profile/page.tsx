@@ -2,6 +2,7 @@
 
 import { useState, useEffect, FormEvent } from "react";
 import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 
@@ -108,10 +109,12 @@ interface ProfileData {
 
 export default function ProfilePage() {
     const { data: session } = useSession();
+    const searchParams = useSearchParams();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [success, setSuccess] = useState("");
     const [error, setError] = useState("");
+    const [gmailConnected, setGmailConnected] = useState(false);
     const [showCustomRole, setShowCustomRole] = useState(false);
     const [customSkill, setCustomSkill] = useState("");
     const [bioExtra, setBioExtra] = useState("");
@@ -137,6 +140,11 @@ export default function ProfilePage() {
                 if (res.ok) {
                     const data = await res.json();
                     const serverUser = data.user;
+                    // If the OAuth callback just redirected us here with ?gmail=connected,
+                    // trust it — the token was just saved. Don't let the async API
+                    // response race and overwrite the state back to false.
+                    const justConnected = searchParams.get("gmail") === "connected";
+                    setGmailConnected(justConnected || Boolean(serverUser.gmailRefreshToken));
 
                     // Check for a locally cached draft
                     const cached = localStorage.getItem(STORAGE_KEY);
@@ -176,6 +184,19 @@ export default function ProfilePage() {
         }
         if (session) loadProfile();
     }, [session]);
+
+    // Handle ?gmail=connected / ?gmail=error from OAuth callback
+    useEffect(() => {
+        const gmailParam = searchParams.get("gmail");
+        if (gmailParam === "connected") {
+            setGmailConnected(true);
+            setSuccess("Gmail connected! Emails will now be sent from your account.");
+            setTimeout(() => setSuccess(""), 4000);
+        } else if (gmailParam === "error") {
+            const reason = searchParams.get("reason") || "unknown";
+            setError(`Gmail connection failed (${reason}). Please try again.`);
+        }
+    }, [searchParams]);
 
     // Auto-save draft to localStorage on every change
     useEffect(() => {
@@ -702,6 +723,66 @@ export default function ProfilePage() {
               "
                         />
                     </div>
+                </div>
+
+                {/* Gmail Connection Section */}
+                <div className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-lg font-semibold text-slate-900">Gmail Account</h2>
+                            <p className="text-xs text-slate-500 mt-0.5">
+                                Connect your Gmail so outreach emails send directly from your account.
+                            </p>
+                        </div>
+                        {gmailConnected ? (
+                            <span className="flex items-center gap-1.5 text-xs font-semibold text-success-700 bg-success-100 px-3 py-1.5 rounded-full">
+                                ✓ Connected
+                            </span>
+                        ) : (
+                            <span className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 bg-slate-100 px-3 py-1.5 rounded-full">
+                                Not connected
+                            </span>
+                        )}
+                    </div>
+
+                    {gmailConnected ? (
+                        <div className="flex items-center gap-3 p-3 bg-success-50 border border-success-200 rounded-xl">
+                            <span className="text-lg">✅</span>
+                            <div>
+                                <p className="text-sm font-medium text-success-800">
+                                    Emails will be sent from {profile.email}
+                                </p>
+                                <p className="text-xs text-success-600 mt-0.5">
+                                    Reconnect if sending stops working.
+                                </p>
+                            </div>
+                            <a
+                                href="/api/auth/gmail"
+                                className="ml-auto text-xs font-semibold text-success-700 hover:text-success-900 underline"
+                            >
+                                Reconnect
+                            </a>
+                        </div>
+                    ) : (
+                        <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                            <span className="text-xl mt-0.5">📧</span>
+                            <div className="flex-1">
+                                <p className="text-sm font-medium text-amber-800">
+                                    Connect your Gmail to send emails
+                                </p>
+                                <p className="text-xs text-amber-600 mt-1">
+                                    You&apos;ll be redirected to Google to grant send-only permission.
+                                    We only request <code className="bg-amber-100 px-1 rounded">gmail.send</code> access.
+                                </p>
+                            </div>
+                            <a
+                                href="/api/auth/gmail"
+                                className="shrink-0 px-4 py-2 text-sm font-semibold bg-amber-500 hover:bg-amber-600 text-white rounded-xl transition-colors"
+                            >
+                                Connect Gmail →
+                            </a>
+                        </div>
+                    )}
                 </div>
 
                 <Button
