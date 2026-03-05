@@ -34,6 +34,9 @@ export default function Navbar() {
                         <Link href="/pricing" className="text-sm font-medium text-slate-600 hover:text-primary-600 transition-colors">
                             Pricing
                         </Link>
+                        <Link href="/blog" className="text-sm font-medium text-slate-600 hover:text-primary-600 transition-colors">
+                            Blog
+                        </Link>
 
                         <div className="flex items-center gap-3 ml-4">
                             {session ? (
@@ -101,6 +104,9 @@ export default function Navbar() {
                         </Link>
                         <Link href="/pricing" className="text-sm font-medium text-slate-600 hover:text-primary-600 py-2" onClick={() => setMobileOpen(false)}>
                             Pricing
+                        </Link>
+                        <Link href="/blog" className="text-sm font-medium text-slate-600 hover:text-primary-600 py-2" onClick={() => setMobileOpen(false)}>
+                            Blog
                         </Link>
                         <hr className="border-slate-100" />
                         {session ? (

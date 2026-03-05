@@ -1,5 +1,7 @@
 import { MetadataRoute } from 'next';
 
+import { getSortedPostsData } from '@/lib/blog';
+
 export default function sitemap(): MetadataRoute.Sitemap {
     const baseUrl = 'https://mailapply.in';
 
@@ -10,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         '/pricing',
         '/login',
         '/signup',
+        '/blog',
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),
@@ -17,5 +20,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: route === '' ? 1 : 0.8,
     }));
 
-    return [...routes];
+    // Dynamic blog posts
+    const blogPosts = getSortedPostsData().map((post) => ({
+        url: `${baseUrl}/blog/${post.slug}`,
+        lastModified: new Date(post.date),
+        changeFrequency: 'monthly' as const,
+        priority: 0.6,
+    }));
+
+    return [...routes, ...blogPosts];
 }

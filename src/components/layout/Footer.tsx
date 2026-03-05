@@ -49,7 +49,7 @@ export default function Footer() {
                         </h4>
                         <ul className="space-y-3">
                             <li>
-                                <Link href="#" className="text-sm text-slate-400 hover:text-white transition-colors">
+                                <Link href="/blog" className="text-sm text-slate-400 hover:text-white transition-colors">
                                     Blog
                                 </Link>
                             </li>
