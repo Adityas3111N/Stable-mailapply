@@ -157,6 +157,14 @@ export default function JobsPage() {
             .finally(() => setLoading(false));
     }, []);
 
+    // Auto-dismiss errors after 5 seconds
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => setError(""), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [error]);
+
     const handleDraft = (job: Job) => {
         const params = new URLSearchParams({
             company: job.company,
@@ -253,9 +261,18 @@ export default function JobsPage() {
                     </div>
                 )}
 
-                {!loading && error && (
-                    <div className="p-4 rounded-xl bg-danger-100 text-danger-700 text-sm font-medium">
-                        {error}
+                {/* Error Toast */}
+                {error && (
+                    <div className="fixed top-20 left-1/2 -translate-x-1/2 md:left-auto md:right-8 md:translate-x-0 z-[100] animate-slide-up flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-danger-200">
+                        <div className="w-8 h-8 rounded-full bg-danger-100 flex items-center justify-center shrink-0">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-danger-600">
+                                <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+                            </svg>
+                        </div>
+                        <p className="text-sm font-semibold text-danger-700">{error}</p>
+                        <button onClick={() => setError("")} className="ml-2 pr-1 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                        </button>
                     </div>
                 )}
 
